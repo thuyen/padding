@@ -28,7 +28,7 @@ void PADH_FW(
     if (h < 0) h += H;
     else if ( h >= H) h -= H;
 
-    int j = n * channels * H * width + c * H * width + h* width + w;
+    int j = n * channels * H * W + c * H * W + h* W + w;
     top_data[i] = image[j];
   }
 }
@@ -59,7 +59,7 @@ void PADH_BW(
     if (h < 0) h += H;
     else if ( h >= H) h -= H;
 
-    int j = n * channels * H * width + c * H * width + h* width + w;
+    int j = n * channels * H * W + c * H * W + h* W + w;
 #pragma omp atomic
     grad_input[j] += grad_output[i];
   }
