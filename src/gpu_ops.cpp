@@ -2,22 +2,22 @@
 
 at::Tensor padh_cpu_forward(
     const at::Tensor &X, // 3d image hwc
-    const int pad
+    const int pad, const int padw, const bool b
     );
 
 at::Tensor padh_cpu_backward(
     const at::Tensor &X, // 3d image hwc
-    const int pad
+    const int pad, const int padw, const bool b
     );
 
 at::Tensor padh_gpu_forward(
     const at::Tensor &X, // 3d image hwc
-    const int pad
+    const int pad, const int padw, const bool b
     );
 
 at::Tensor padh_gpu_backward(
     const at::Tensor &X, // 3d image hwc
-    const int pad
+    const int pad, const int padw, const bool b
     );
 
 PYBIND11_MODULE(padding, m) {
