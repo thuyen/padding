@@ -26,3 +26,14 @@ class PaddingFunction(Function):
         return out, None, None
 
 pad = PaddingFunction.apply
+
+import torch.nn as nn
+class Padding(nn.Module):
+    def __init__(self, pad_h=1, pad_w=0, onesided=False):
+        super(Padding, self).__init__()
+        self.pad_h = pad_h
+        self.pad_w = pad_w
+        self.onesided = onesided
+
+    def forward(self, x):
+        return pad(x, self.pad_h, self.pad_w, self.onesided)

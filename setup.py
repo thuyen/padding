@@ -42,6 +42,6 @@ ext_modules.append(extension)
 
 setup(
     name='padding',
-    packages=['padding', 'padding/functional'],
+    packages=['padding', 'padding/pkgs'],
     ext_modules=ext_modules,
     cmdclass={'build_ext': torch.utils.cpp_extension.BuildExtension})
