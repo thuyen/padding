@@ -28,7 +28,6 @@ if torch.cuda.is_available():
         extra_compile_args={'cxx': ['-g', '-fopenmp'],
                             'nvcc': ['-O2']})
 else:
-    pass
     extension = CppExtension(
         name='padding._C',
         sources = [
