@@ -23,7 +23,7 @@ class PaddingFunction(Function):
             out = _ext.padh_gpu_backward(grad_output, pad_h, pad_w, flag)
         else:
             out = _ext.padh_cpu_backward(grad_output, pad_h, pad_w, flag)
-        return out, None, None
+        return out, None, None, None
 
 pad = PaddingFunction.apply
 
