@@ -22,8 +22,8 @@ if torch.cuda.is_available():
         name='padding._C',
         sources = [
             'src/gpu_ops.cpp',
-            'src/padding_cpu.cpp',
-            'src/padding_gpu.cu',
+            'src/padding_cpu.cpp', #-> padding_cpu.o
+            'src/padding_gpu.cu',  #-> padding_gpu.o
         ],
         extra_compile_args={'cxx': ['-g', '-fopenmp'],
                             'nvcc': ['-O2']})
