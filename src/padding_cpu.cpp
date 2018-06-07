@@ -103,24 +103,24 @@ at::Tensor padh_cpu_backward(
   at::Tensor grad_input = X.type().zeros(
       {X.size(0), channels, H, W});
 
-  PADH_BW<float>(
-      X.numel(),
-      X.data<float>(),
-      channels,
-      height,
-      width,
-      pad, H, W,
-      grad_input.data<float>());
+  //PADH_BW<float>(
+  //    X.numel(),
+  //    X.data<float>(),
+  //    channels,
+  //    height,
+  //    width,
+  //    pad, H, W,
+  //    grad_input.data<float>());
 
-  //AT_DISPATCH_ALL_TYPES(X.type(), "padh_cpu_backward", [&] {
-  //    PADH_BW<scalar_t>(
-  //        X.numel(),
-  //        X.data<scalar_t>(),
-  //        channels,
-  //        height,
-  //        width,
-  //        pad, H,
-  //        grad_input.data<scalar_t>());
-  //});
+  AT_DISPATCH_ALL_TYPES(X.type(), "padh_cpu_backward", [&] {
+      PADH_BW<scalar_t>(
+          X.numel(),
+          X.data<scalar_t>(),
+          channels,
+          height,
+          width,
+          pad, H,
+          grad_input.data<scalar_t>());
+  });
   return grad_input;
 }

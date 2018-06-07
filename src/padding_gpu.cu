@@ -117,6 +117,7 @@ at::Tensor padh_gpu_backward(
   const int threads = 1024;
   const int blocks = (output_size + threads - 1) / threads;
 
+  //// atomic ops only support float?
   //AT_DISPATCH_ALL_TYPES(X.type(), "padh_cuda_backward", [&] {
   //    //using cuda_scalar_t = at::cuda::type<scalar_t>;
   //    PADH_BW_K<scalar_t><<<blocks, threads>>>(
