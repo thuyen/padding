@@ -119,7 +119,7 @@ at::Tensor padh_cpu_backward(
           channels,
           height,
           width,
-          pad, H,
+          pad, H, W,
           grad_input.data<scalar_t>());
   });
   return grad_input;

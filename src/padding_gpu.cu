@@ -126,7 +126,7 @@ at::Tensor padh_gpu_backward(
   //        channels,
   //        height,
   //        width,
-  //        pad,
+  //        pad, H, W
   //        grad_input.data<scalar_t>());
   //});
 

@@ -1,5 +1,5 @@
 import torch
-import padding
+import padding._C as padding
 
 flag=True
 flag=False

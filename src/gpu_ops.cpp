@@ -20,7 +20,7 @@ at::Tensor padh_gpu_backward(
     const int pad, const int padw, const bool b
     );
 
-PYBIND11_MODULE(padding, m) {
+PYBIND11_MODULE(_C, m) {
   m.def("padh_cpu_forward", &padh_cpu_forward, "padh_cpu_forward");
   m.def("padh_cpu_backward", &padh_cpu_backward, "padh_cpu_backward");
   m.def("padh_gpu_forward", &padh_gpu_forward, "padh_gpu_forward");

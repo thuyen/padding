@@ -19,7 +19,7 @@ ext_modules = []
 
 if torch.cuda.is_available():
     extension = CUDAExtension(
-        name='padding',
+        name='padding._C',
         sources = [
             'src/gpu_ops.cpp',
             'src/padding_cpu.cpp',
@@ -30,7 +30,7 @@ if torch.cuda.is_available():
 else:
     pass
     extension = CppExtension(
-        name='padding',
+        name='padding._C',
         sources = [
             'src/cpu_ops.cpp',
             'src/padding_cpu.cpp',
@@ -42,6 +42,6 @@ ext_modules.append(extension)
 
 setup(
     name='padding',
-    #py_modules=['F'],
+    packages=['padding', 'padding/functional'],
     ext_modules=ext_modules,
     cmdclass={'build_ext': torch.utils.cpp_extension.BuildExtension})
