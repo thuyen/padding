@@ -24,9 +24,11 @@ void PADH_FW(
 
     if (w >= W) continue;
 
+    h = height-1 - h;
     h -= pad;
     if (h < 0) h += H;
     else if ( h >= H) h -= H;
+    h = H-1 - h;
 
     int j = n * channels * H * W + c * H * W + h* W + w;
     top_data[i] = image[j];
@@ -55,9 +57,11 @@ void PADH_BW(
 
     if (w >= W) continue;
 
+    h = height-1 - h;
     h -= pad;
     if (h < 0) h += H;
     else if ( h >= H) h -= H;
+    h = H-1 - h;
 
     int j = n * channels * H * W + c * H * W + h* W + w;
 #pragma omp atomic

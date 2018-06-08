@@ -29,9 +29,11 @@ __global__ void PADH_FW_K(
 
     if (w >= W) continue;
 
+    h = height-1 - h;
     h -= pad;
     if (h < 0) h += H;
     else if ( h >= H) h -= H;
+    h = H-1 - h;
 
     int j = n * channels * H * W + c * H * W + h* W + w;
     top_data[i] = image[j];
@@ -58,9 +60,11 @@ __global__ void PADH_BW_K(
 
     if (w >= W) continue;
 
+    h = height-1 - h;
     h -= pad;
     if (h < 0) h += H;
     else if ( h >= H) h -= H;
+    h = H-1 - h;
 
     int j = n * channels * H * W + c * H * W + h* W + w;
     atomicAdd(grad_input + j, grad_output[i]);
