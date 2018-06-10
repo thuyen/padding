@@ -1,7 +1,4 @@
 #include <ATen/ATen.h>
-#include <iostream>
-
-using namespace std;
 
 template <typename T>
 void PADH_FW(

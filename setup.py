@@ -24,6 +24,8 @@ if torch.cuda.is_available():
             'src/gpu_ops.cpp',
             'src/padding_cpu.cpp', #-> padding_cpu.o
             'src/padding_gpu.cu',  #-> padding_gpu.o
+            'src/crop_cpu.cpp',    #-> crop_cpu.o
+            'src/crop_gpu.cu',     #-> crop_gpu.o
         ],
         extra_compile_args={'cxx': ['-g', '-fopenmp'],
                             'nvcc': ['-O2']})
@@ -33,6 +35,7 @@ else:
         sources = [
             'src/cpu_ops.cpp',
             'src/padding_cpu.cpp',
+            'src/crop_cpu.cpp',
         ],
         extra_compile_args={'cxx': ['-g', '-fopenmp']})
 
