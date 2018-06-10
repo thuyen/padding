@@ -1,9 +1,5 @@
 #include <ATen/ATen.h>
 
-// fix    Kx2
-// images NCHW
-// out    NKchw
-
 template <typename T>
 void Crop2D_FW(
     const int numels,
@@ -19,6 +15,7 @@ void Crop2D_FW(
   int i;
 #pragma omp parallel for
   for (i = 0; i < numels; ++i) {
+    //NKCHW
     int w = i % pooled_width;
     int h = (i / pooled_width) % pooled_height;
     int c = (i / pooled_width / pooled_height) % channels;
@@ -34,7 +31,7 @@ void Crop2D_FW(
     if (row < 0) row += height;
     if (row >= height) row -=height;
 
-
+    //NCHW
     int j = n * channels * height * width + c * height * width + row * width + col;
 
     top_data[i] = image[j];
@@ -72,7 +69,6 @@ void Crop2D_BW(
     if (row < 0) row += height;
     if (row >= height) row -=height;
 
-
     int j = n * channels * height * width + c * height * width + row * width + col;
 
 #pragma omp atomic
@@ -81,7 +77,6 @@ void Crop2D_BW(
   }
 }
 
-
 at::Tensor crop_cpu_forward(
     const at::Tensor &X, // nchw
     const at::Tensor &R, // k2
@@ -89,7 +84,7 @@ at::Tensor crop_cpu_forward(
     ) {
   int channels = X.size(1), height = X.size(2), width = X.size(3);
   int K = R.size(0);
-  at::Tensor output = X.type().zeros({X.size(0), K, channels, height, width});
+  at::Tensor output = X.type().zeros({X.size(0), K, channels, pooled_height, pooled_width});
 
   AT_DISPATCH_ALL_TYPES(X.type(), "crop_cpu_forward", [&] {
       Crop2D_FW<scalar_t>(
@@ -106,7 +101,6 @@ at::Tensor crop_cpu_forward(
   });
   return output;
 }
-
 
 at::Tensor crop_cpu_backward(
     const at::Tensor &X, // nkchw

@@ -49,9 +49,9 @@ class CropFunction(Function):
         if not x.is_contiguous():
             x = x.contiguous()
         if x.is_cuda:
-            out = _ext.crop_gpu_forward(x, r, pooled_w, pooled_h)
+            out = _ext.crop_gpu_forward(x, r, pooled_h, pooled_w)
         else:
-            out = _ext.crop_cpu_forward(x, r, pooled_w, pooled_h)
+            out = _ext.crop_cpu_forward(x, r, pooled_h, pooled_w)
         return out
 
     @staticmethod
@@ -66,4 +66,4 @@ class CropFunction(Function):
             out = _ext.crop_cpu_backward(grad_output, r, height, width)
         return out, None, None, None
 
-
+crop = CropFunction.apply

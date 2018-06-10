@@ -4,9 +4,6 @@
 
 #include "utils.h"
 
-// fix    Kx2
-// images NCHW
-// out    NKchw
 
 template <typename T>
 __global__ void Crop2D_FW(
@@ -87,14 +84,13 @@ at::Tensor crop_gpu_forward(
     ) {
   int channels = X.size(1), height = X.size(2), width = X.size(3);
   int K = R.size(0);
-  at::Tensor output = X.type().zeros({X.size(0), K, channels, height, width});
+  at::Tensor output = X.type().zeros({X.size(0), K, channels, pooled_height, pooled_width});
 
   const int output_size = output.numel();
   const int threads = 1024;
   const int blocks = (output_size + threads - 1) / threads;
 
-
-  AT_DISPATCH_ALL_TYPES(X.type(), "padh_cuda_forward", [&] {
+  AT_DISPATCH_ALL_TYPES(X.type(), "crop_cuda_forward", [&] {
       Crop2D_FW<scalar_t><<<blocks, threads>>>(
           output_size,
           X.data<scalar_t>(),
@@ -126,19 +122,6 @@ at::Tensor crop_gpu_backward(
   const int threads = 1024;
   const int blocks = (output_size + threads - 1) / threads;
 
-  //// atomic ops only support float?
-  //AT_DISPATCH_ALL_TYPES(X.type(), "padh_cuda_backward", [&] {
-  //    //using cuda_scalar_t = at::cuda::type<scalar_t>;
-  //    PADH_BW_K<scalar_t><<<blocks, threads>>>(
-  //        output_size,
-  //        X.data<scalar_t>(),
-  //        channels,
-  //        height,
-  //        width,
-  //        pad, H, W
-  //        grad_input.data<scalar_t>());
-  //});
-
   Crop2D_BW<float><<<blocks, threads>>>(
       output_size,
       X.data<float>(),
@@ -153,4 +136,3 @@ at::Tensor crop_gpu_backward(
 
   return grad_input;
 }
-
