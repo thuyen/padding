@@ -27,8 +27,9 @@ class PaddingFunction(Function):
             out = _ext.padh_cpu_backward(grad_output, pad_h, pad_w, flag)
         return out, None, None, None
 
-
 pad = PaddingFunction.apply
+
+
 class Padding(nn.Module):
     def __init__(self, pad_h=1, pad_w=0, onesided=False):
         super(Padding, self).__init__()
