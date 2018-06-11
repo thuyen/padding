@@ -13,7 +13,7 @@ at::Tensor padh_cpu_backward(
 at::Tensor crop_cpu_forward(
     const at::Tensor &X, // nchw
     const at::Tensor &R, // k2
-    int pooled_height, int pooled_width
+    const int pooled_height, const int pooled_width
     );
 
 at::Tensor crop_cpu_backward(

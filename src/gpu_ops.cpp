@@ -23,25 +23,25 @@ at::Tensor padh_gpu_backward(
 at::Tensor crop_cpu_forward(
     const at::Tensor &X, // nchw
     const at::Tensor &R, // k2
-    int pooled_height, int pooled_width
+    const int pooled_height, const int pooled_width, const bool first
     );
 
 at::Tensor crop_cpu_backward(
     const at::Tensor &X, // nkchw
     const at::Tensor &R, // k2
-    const int height, const int width
+    const int height, const int width, const bool first
     );
 
 at::Tensor crop_gpu_forward(
     const at::Tensor &X, // nchw
     const at::Tensor &R, // k2
-    int pooled_height, int pooled_width
+    const int pooled_height, const int pooled_width, const bool first
     );
 
 at::Tensor crop_gpu_backward(
     const at::Tensor &X, // nkchw
     const at::Tensor &R, // k2
-    const int height, const int width
+    const int height, const int width, const bool first
     );
 
 
