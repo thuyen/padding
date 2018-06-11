@@ -43,28 +43,28 @@ class Padding(nn.Module):
 
 class CropFunction(Function):
     @staticmethod
-    def forward(ctx, x, r, pooled_h=1, pooled_w=1):
+    def forward(ctx, x, r, pooled_h=1, pooled_w=1, first=True):
         height, width = x.size(2), x.size(3)
-        ctx.constant = height, width
+        ctx.constant = height, width, first
         ctx.save_for_backward(r)
         if not x.is_contiguous():
             x = x.contiguous()
         if x.is_cuda:
-            out = _ext.crop_gpu_forward(x, r, pooled_h, pooled_w)
+            out = _ext.crop_gpu_forward(x, r, pooled_h, pooled_w, first)
         else:
-            out = _ext.crop_cpu_forward(x, r, pooled_h, pooled_w)
+            out = _ext.crop_cpu_forward(x, r, pooled_h, pooled_w, first)
         return out
 
     @staticmethod
     def backward(ctx, grad_output):
-        height, width = ctx.constant
+        height, width, first = ctx.constant
         r, = ctx.saved_tensors
         if not grad_output.is_contiguous():
             grad_output = grad_output.contiguous()
         if grad_output.is_cuda:
-            out = _ext.crop_gpu_backward(grad_output, r, height, width)
+            out = _ext.crop_gpu_backward(grad_output, r, height, width, first)
         else:
-            out = _ext.crop_cpu_backward(grad_output, r, height, width)
-        return out, None, None, None
+            out = _ext.crop_cpu_backward(grad_output, r, height, width, first)
+        return out, None, None, None, None
 
 crop = CropFunction.apply
