@@ -44,7 +44,8 @@ class Padding(nn.Module):
 class CropFunction(Function):
     @staticmethod
     def forward(ctx, x, r, pooled_h=1, pooled_w=1, first=True):
-        height, width = x.size(2), x.size(3)
+        off = 1 if True else 0
+        height, width = x.size(2-off), x.size(3-off)
         ctx.constant = height, width, first
         ctx.save_for_backward(r)
         if not x.is_contiguous():
