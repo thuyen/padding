@@ -69,3 +69,87 @@ class CropFunction(Function):
         return out, None, None, None, None
 
 crop = CropFunction.apply
+
+
+class Conv2DFunction(Function):
+    @staticmethod
+    def forward(ctx, x, weight, bias, stride, groups, padh, padw, onesided):
+        ctx.constant = padh, padw, onesided, stride, groups
+        ctx.save_for_backward(x)
+        ctx.save_for_backward(weight)
+
+        if not x.is_contiguous():
+            x = x.contiguous()
+        if x.is_cuda:
+            out = _ext.conv2d_gpu_forward(
+                    x, padh, padw, onesided,
+                    weight, bias, stride, groups)
+        else:
+            raise 'Error'
+        return out
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        padh, padw, onesided, stride, groups = ctx.constant
+        x, weight = ctx.saved_tensors
+        if not grad_output.is_contiguous():
+            grad_output = grad_output.contiguous()
+
+        if grad_output.is_cuda:
+            #grad_input, grad_weight, grad_bias = (
+            ret = (
+                    _ext.conv2d_gpu_backward(
+                        x, grad_output,
+                        padh, padw, onesided,
+                        weight, stride, groups)
+                    )
+        else:
+            raise 'Error'
+
+        ret += (None, )*5
+        return ret
+
+
+circular_conv2d = Conv2DFunction.apply
+
+
+class Svf2DFunction(Function):
+    @staticmethod
+    def forward(ctx, x, weight, bias, stride, groups, padh, padw, onesided):
+        ctx.constant = padh, padw, onesided, stride, groups
+        ctx.save_for_backward(x)
+        ctx.save_for_backward(weight)
+
+        if not x.is_contiguous():
+            x = x.contiguous()
+        if x.is_cuda:
+            out = _ext.conv2d_gpu_forward(
+                    x, padh, padw, onesided,
+                    weight, bias, stride, groups)
+        else:
+            raise 'Error'
+        return out
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        padh, padw, onesided, stride, groups = ctx.constant
+        x, weight = ctx.saved_tensors
+        if not grad_output.is_contiguous():
+            grad_output = grad_output.contiguous()
+
+        if grad_output.is_cuda:
+            #grad_input, grad_weight, grad_bias = (
+            ret = (
+                    _ext.conv2d_gpu_backward(
+                        x, grad_output,
+                        padh, padw, onesided,
+                        weight, stride, groups)
+                    )
+        else:
+            raise 'Error'
+
+        ret = ret + (None, )*5
+        return ret
+
+
+circular_svf2d = Svf2DFunction.apply
