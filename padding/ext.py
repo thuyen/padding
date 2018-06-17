@@ -68,6 +68,7 @@ class CropFunction(Function):
             out = _ext.crop_cpu_backward(grad_output, r, height, width, first)
         return out, None, None, None, None
 
+
 crop = CropFunction.apply
 
 
@@ -82,8 +83,9 @@ class Conv2DFunction(Function):
             x = x.contiguous()
         if x.is_cuda:
             out = _ext.conv2d_gpu_forward(
-                    x, padh, padw, onesided,
-                    weight, bias, stride, groups)
+                    x, weight, bias,
+                    padh, padw, onesided,
+                    stride, groups)
         else:
             raise 'Error'
         return out
@@ -99,9 +101,9 @@ class Conv2DFunction(Function):
             #grad_input, grad_weight, grad_bias = (
             ret = (
                     _ext.conv2d_gpu_backward(
-                        x, grad_output,
+                        grad_output, x, weight,
                         padh, padw, onesided,
-                        weight, stride, groups)
+                        stride, groups)
                     )
         else:
             raise 'Error'
@@ -115,35 +117,36 @@ circular_conv2d = Conv2DFunction.apply
 
 class Svf2DFunction(Function):
     @staticmethod
-    def forward(ctx, x, weight, bias, stride, groups, padh, padw, onesided):
-        ctx.constant = padh, padw, onesided, stride, groups
+    def forward(ctx, x, r, weight, pooled_height, pooled_width, first):
+
+        ctx.constnat = height, width, pooled_height, pooled_widht, first
         ctx.save_for_backward(x)
+        ctx.save_for_backward(r)
         ctx.save_for_backward(weight)
 
         if not x.is_contiguous():
             x = x.contiguous()
         if x.is_cuda:
-            out = _ext.conv2d_gpu_forward(
-                    x, padh, padw, onesided,
-                    weight, bias, stride, groups)
+            out = _ext.svf2d_gpu_forward(
+                    x, r, weight, pooled_height, pooled_width, first)
         else:
             raise 'Error'
         return out
 
     @staticmethod
     def backward(ctx, grad_output):
-        padh, padw, onesided, stride, groups = ctx.constant
-        x, weight = ctx.saved_tensors
+        height, width, pooled_height, pooled_widht, first = ctx.constant
+        x, r, weight = ctx.saved_tensors
         if not grad_output.is_contiguous():
             grad_output = grad_output.contiguous()
 
         if grad_output.is_cuda:
             #grad_input, grad_weight, grad_bias = (
             ret = (
-                    _ext.conv2d_gpu_backward(
-                        x, grad_output,
-                        padh, padw, onesided,
-                        weight, stride, groups)
+                    _ext.svf2d_gpu_backward(
+                        grad_output,
+                        x, r, weight,
+                        height, width, pooled_height, pooled_width, first)
                     )
         else:
             raise 'Error'

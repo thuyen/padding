@@ -25,8 +25,8 @@ at::Tensor crop_gpu_backward(
 
 at::Tensor conv2d_gpu_forward(
     const at::Tensor &X, // nchw
-    const int padh, const int padw, const bool onesided,
     const at::Tensor weight, const at::Tensor bias,
+    const int padh, const int padw, const bool onesided,
     at::IntList stride, int64_t groups
     ) {
 
@@ -44,10 +44,10 @@ at::Tensor conv2d_gpu_forward(
 
 
 std::tuple<at::Tensor, at::Tensor, at::Tensor> conv2d_gpu_backward(
-    const at::Tensor &input, // nchw
     const at::Tensor &grad_output, // nchw
-    const int padh, const int padw, const bool onesided,
+    const at::Tensor &input, // nchw
     const at::Tensor weight,
+    const int padh, const int padw, const bool onesided,
     at::IntList stride, int64_t groups
     ) {
   //grad_input, grad_weight, grad_bias =
@@ -69,8 +69,8 @@ std::tuple<at::Tensor, at::Tensor, at::Tensor> conv2d_gpu_backward(
 at::Tensor svf2d_gpu_forward(
     const at::Tensor &X, // nchw
     const at::Tensor &R, // k2
-    const int pooled_height, const int pooled_width, const bool first,
-    const at::Tensor &weight
+    const at::Tensor &weight,
+    const int pooled_height, const int pooled_width, const bool first
     ) {
   auto cropped = crop_gpu_forward(X, R, pooled_height, pooled_width, first);
   cropped = cropped.view({X.size(0) * R.size(0), 1, -1});
@@ -82,9 +82,9 @@ std::tuple<at::Tensor, at::Tensor> svf2d_gpu_backward(
     const at::Tensor &grad_output, // nchw
     const at::Tensor &X, // nchw
     const at::Tensor &R, // k2
+    const at::Tensor &weight,
     const int height, const int width,
-    const int pooled_height, const int pooled_width, const bool first,
-    const at::Tensor &weight
+    const int pooled_height, const int pooled_width, const bool first
     ) {
   auto grad_input  =  grad_output.bmm(weight.transpose(1, 2));
   auto grad_weight =  X.transpose(1, 2).bmm(grad_output);
