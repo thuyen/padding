@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.autograd import Function
-import padding._C as _ext
+import padding._C as _C
 
 
 class PaddingFunction(Function):
@@ -11,9 +11,9 @@ class PaddingFunction(Function):
         if not x.is_contiguous():
             x = x.contiguous()
         if x.is_cuda:
-            out = _ext.padh_gpu_forward(x, pad_h, pad_w, flag)
+            out = _C.padh_gpu_forward(x, pad_h, pad_w, flag)
         else:
-            out = _ext.padh_cpu_forward(x, pad_h, pad_w, flag)
+            out = _C.padh_cpu_forward(x, pad_h, pad_w, flag)
         return out
 
     @staticmethod
@@ -22,9 +22,9 @@ class PaddingFunction(Function):
         if not grad_output.is_contiguous():
             grad_output = grad_output.contiguous()
         if grad_output.is_cuda:
-            out = _ext.padh_gpu_backward(grad_output, pad_h, pad_w, flag)
+            out = _C.padh_gpu_backward(grad_output, pad_h, pad_w, flag)
         else:
-            out = _ext.padh_cpu_backward(grad_output, pad_h, pad_w, flag)
+            out = _C.padh_cpu_backward(grad_output, pad_h, pad_w, flag)
         return out, None, None, None
 
 pad = PaddingFunction.apply
@@ -44,16 +44,16 @@ class Padding(nn.Module):
 class CropFunction(Function):
     @staticmethod
     def forward(ctx, x, r, pooled_h=1, pooled_w=1, first=True):
-        off = 1 if True else 0
+        off = 1 if first else 0
         height, width = x.size(2-off), x.size(3-off)
         ctx.constant = height, width, first
         ctx.save_for_backward(r)
         if not x.is_contiguous():
             x = x.contiguous()
         if x.is_cuda:
-            out = _ext.crop_gpu_forward(x, r, pooled_h, pooled_w, first)
+            out = _C.crop_gpu_forward(x, r, pooled_h, pooled_w, first)
         else:
-            out = _ext.crop_cpu_forward(x, r, pooled_h, pooled_w, first)
+            out = _C.crop_cpu_forward(x, r, pooled_h, pooled_w, first)
         return out
 
     @staticmethod
@@ -63,9 +63,9 @@ class CropFunction(Function):
         if not grad_output.is_contiguous():
             grad_output = grad_output.contiguous()
         if grad_output.is_cuda:
-            out = _ext.crop_gpu_backward(grad_output, r, height, width, first)
+            out = _C.crop_gpu_backward(grad_output, r, height, width, first)
         else:
-            out = _ext.crop_cpu_backward(grad_output, r, height, width, first)
+            out = _C.crop_cpu_backward(grad_output, r, height, width, first)
         return out, None, None, None, None
 
 
@@ -82,7 +82,7 @@ class Conv2DFunction(Function):
         if not x.is_contiguous():
             x = x.contiguous()
         if x.is_cuda:
-            out = _ext.conv2d_gpu_forward(
+            out = _C.conv2d_gpu_forward(
                     x, weight, bias,
                     padh, padw, onesided,
                     stride, groups)
@@ -100,7 +100,7 @@ class Conv2DFunction(Function):
         if grad_output.is_cuda:
             #grad_input, grad_weight, grad_bias = (
             ret = (
-                    _ext.conv2d_gpu_backward(
+                    _C.conv2d_gpu_backward(
                         grad_output, x, weight,
                         padh, padw, onesided,
                         stride, groups)
@@ -119,6 +119,9 @@ class Svf2DFunction(Function):
     @staticmethod
     def forward(ctx, x, r, weight, pooled_height, pooled_width, first):
 
+        off = 1 if first else 0
+        height, width = x.size(2-off), x.size(3-off)
+
         ctx.constnat = height, width, pooled_height, pooled_widht, first
         ctx.save_for_backward(x)
         ctx.save_for_backward(r)
@@ -127,7 +130,7 @@ class Svf2DFunction(Function):
         if not x.is_contiguous():
             x = x.contiguous()
         if x.is_cuda:
-            out = _ext.svf2d_gpu_forward(
+            out = _C.svf2d_gpu_forward(
                     x, r, weight, pooled_height, pooled_width, first)
         else:
             raise 'Error'
@@ -143,7 +146,7 @@ class Svf2DFunction(Function):
         if grad_output.is_cuda:
             #grad_input, grad_weight, grad_bias = (
             ret = (
-                    _ext.svf2d_gpu_backward(
+                    _C.svf2d_gpu_backward(
                         grad_output,
                         x, r, weight,
                         height, width, pooled_height, pooled_width, first)
