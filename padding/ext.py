@@ -99,7 +99,7 @@ class Conv2DFunction(Function):
             grad_output = grad_output.contiguous()
 
         if grad_output.is_cuda:
-            #grad_input, grad_weight
+            #grad_input, grad_weight, grad_bias
             ret = _C.conv2d_gpu_backward(
                     grad_output, x, weight,
                     padh, padw, onesided,
