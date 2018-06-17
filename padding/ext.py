@@ -87,7 +87,8 @@ class Conv2DFunction(Function):
                     padh, padw, onesided,
                     stride, groups)
         else:
-            raise 'Error'
+            raise ValueError('CPU OP is not supported')
+
         return out
 
     @staticmethod
@@ -98,17 +99,15 @@ class Conv2DFunction(Function):
             grad_output = grad_output.contiguous()
 
         if grad_output.is_cuda:
-            #grad_input, grad_weight, grad_bias = (
-            ret = (
-                    _C.conv2d_gpu_backward(
-                        grad_output, x, weight,
-                        padh, padw, onesided,
-                        stride, groups)
-                    )
+            #grad_input, grad_weight
+            ret = _C.conv2d_gpu_backward(
+                    grad_output, x, weight,
+                    padh, padw, onesided,
+                    stride, groups)
         else:
-            raise 'Error'
+            raise ValueError('CPU OP is not supported')
 
-        ret += (None, )*5
+        ret = ret + (None, )*5
         return ret
 
 
@@ -133,7 +132,8 @@ class Svf2DFunction(Function):
             out = _C.svf2d_gpu_forward(
                     x, r, weight, pooled_height, pooled_width, first)
         else:
-            raise 'Error'
+            raise ValueError('CPU OP is not supported')
+
         return out
 
     @staticmethod
@@ -144,15 +144,14 @@ class Svf2DFunction(Function):
             grad_output = grad_output.contiguous()
 
         if grad_output.is_cuda:
-            #grad_input, grad_weight, grad_bias = (
-            ret = (
-                    _C.svf2d_gpu_backward(
-                        grad_output,
-                        x, r, weight,
-                        height, width, pooled_height, pooled_width, first)
-                    )
+            #grad_input, grad_weight
+            ret = _C.svf2d_gpu_backward(
+                    grad_output,
+                    x, r, weight,
+                    height, width, pooled_height, pooled_width, first)
+
         else:
-            raise 'Error'
+            raise ValueError('CPU OP is not supported')
 
         ret = ret + (None, )*5
         return ret
